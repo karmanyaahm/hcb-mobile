@@ -194,7 +194,14 @@ export default function ProcessDonationPage({
   const theme = useTheme();
   const isDark = useIsDark();
 
-  const donationUrl = `https://hcb.hackclub.com/donations/start/${slug}?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&amount=${payment?.amount}${message ? `&message=${encodeURIComponent(message)}` : ""}`;
+  const donationUrl = (() => {
+    const params = new URLSearchParams();
+    params.set("name", name);
+    params.set("email", email);
+    params.set("amount", String(payment?.amount ?? ""));
+    if (message) params.set("message", message);
+    return `https://hcb.hackclub.com/donations/start/${slug}?${params.toString()}`;
+  })();
   const donationAmount = `$${(payment?.amount / 100).toFixed(2)}`;
 
   const handlePayment = async () => {

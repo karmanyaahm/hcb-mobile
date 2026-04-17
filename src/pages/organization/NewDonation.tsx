@@ -26,6 +26,13 @@ import { palette } from "../../styles/theme";
 
 type Props = NativeStackScreenProps<StackParamList, "NewDonation">;
 
+const formatPrefillAmount = (cents?: number) => {
+  if (cents === undefined || !Number.isFinite(cents) || cents <= 0) {
+    return "$";
+  }
+  return `$${(cents / 100).toFixed(2)}`;
+};
+
 export default function NewDonationPage({
   route: {
     params: {
@@ -42,13 +49,6 @@ export default function NewDonationPage({
 }: Props) {
   const { colors } = useTheme();
   const hcb = useClient();
-
-  const formatPrefillAmount = (cents?: number) => {
-    if (cents === undefined || !Number.isFinite(cents) || cents <= 0) {
-      return "$";
-    }
-    return `$${(cents / 100).toFixed(2)}`;
-  };
 
   const [amount, setAmount] = useState(formatPrefillAmount(prefillAmount));
   const value = parseFloat(amount.replace("$", "0"));
