@@ -184,7 +184,7 @@ function ActionButton({
 export default function ProcessDonationPage({
   navigation,
   route: {
-    params: { payment, collectPayment, email, name, slug },
+    params: { payment, collectPayment, email, name, slug, message },
   },
 }: Props) {
   const [status, setStatus] = useState<
@@ -194,7 +194,7 @@ export default function ProcessDonationPage({
   const theme = useTheme();
   const isDark = useIsDark();
 
-  const donationUrl = `https://hcb.hackclub.com/donations/start/${slug}?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&amount=${payment?.amount}`;
+  const donationUrl = `https://hcb.hackclub.com/donations/start/${slug}?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&amount=${payment?.amount}${message ? `&message=${encodeURIComponent(message)}` : ""}`;
   const donationAmount = `$${(payment?.amount / 100).toFixed(2)}`;
 
   const handlePayment = async () => {
