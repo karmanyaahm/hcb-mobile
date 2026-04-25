@@ -78,7 +78,7 @@ export default function NewDonationPage({
           name,
           email,
           message: donationMessage,
-          tax_deductable: isTaxDeductable,
+          tax_deductible: isTaxDeductable,
         },
       });
       const data = (await response.json()) as { id: string };
@@ -368,26 +368,26 @@ export default function NewDonationPage({
                 );
                 return;
               }
-              if (isDevMode) {
-                // In dev mode, navigate with mock payment data
-                navigation.navigate("ProcessDonation", {
-                  orgId,
-                  payment: {
-                    amount: Math.round(value * 100),
-                  } as PaymentIntent.Type,
-                  collectPayment: async () => {
-                    // Mock payment function - simulates success after 2 seconds
-                    return new Promise((resolve) =>
-                      setTimeout(() => resolve(true), 2000),
-                    );
-                  },
-                  name: name || "Dev Test User",
-                  email: email || "dev@example.com",
-                  slug: orgSlug || "test-org",
-                  message: donationMessage,
-                });
-                return;
-              }
+              // if (isDevMode) {
+              //   // In dev mode, navigate with mock payment data
+              //   navigation.navigate("ProcessDonation", {
+              //     orgId,
+              //     payment: {
+              //       amount: Math.round(value * 100),
+              //     } as PaymentIntent.Type,
+              //     collectPayment: async () => {
+              //       // Mock payment function - simulates success after 2 seconds
+              //       return new Promise((resolve) =>
+              //         setTimeout(() => resolve(true), 2000),
+              //       );
+              //     },
+              //     name: name || "Dev Test User",
+              //     email: email || "dev@example.com",
+              //     slug: orgSlug || "test-org",
+              //     message: donationMessage || "Dev Test Message",
+              //   });
+              //   return;
+              // }
               try {
                 const donation_id = await createDonation();
                 await paymentIntent({ donation_id });
