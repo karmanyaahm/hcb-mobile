@@ -198,7 +198,7 @@ export default function AppContent({
         };
       };
 
-      const newToken = token.terminal_connection_token.secret;
+      const newToken = token.terminal_connection_token?.secret;
       const newExpiry = now + TOKEN_CACHE_DURATION;
 
       setCachedToken(newToken);

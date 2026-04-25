@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useTheme } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -25,21 +26,38 @@ import { palette } from "../../styles/theme";
 
 type Props = NativeStackScreenProps<StackParamList, "NewDonation">;
 
+const formatPrefillAmount = (cents?: number) => {
+  if (cents === undefined || !Number.isFinite(cents) || cents <= 0) {
+    return "$";
+  }
+  return `$${(cents / 100).toFixed(2)}`;
+};
+
 export default function NewDonationPage({
   route: {
-    params: { orgId, orgSlug },
+    params: {
+      orgId,
+      orgSlug,
+      amount: prefillAmount,
+      name: prefillName,
+      email: prefillEmail,
+      message: prefillMessage,
+      goods: prefillGoods,
+    },
   },
   navigation,
 }: Props) {
   const { colors } = useTheme();
   const hcb = useClient();
 
-  const [amount, setAmount] = useState("$");
+  const [amount, setAmount] = useState(formatPrefillAmount(prefillAmount));
   const value = parseFloat(amount.replace("$", "0"));
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [isTaxDeductable, setIsTaxDeductable] = useState(false);
+  const [name, setName] = useState(prefillName ?? "");
+  const [email, setEmail] = useState(prefillEmail ?? "");
+  const [donationMessage, setDonationMessage] = useState(prefillMessage ?? "");
+  const [isTaxDeductable, setIsTaxDeductable] = useState(prefillGoods ?? false);
   const emailRef = useRef<TextInput>(null);
+  const messageRef = useRef<TextInput>(null);
 
   const {
     createPaymentIntent,
@@ -59,7 +77,8 @@ export default function NewDonationPage({
           amount_cents: value * 100,
           name,
           email,
-          tax_deductable: isTaxDeductable,
+          message: donationMessage,
+          tax_deductible: isTaxDeductable,
         },
       });
       const data = (await response.json()) as { id: string };
@@ -103,6 +122,7 @@ export default function NewDonationPage({
         name,
         email,
         slug: orgSlug || "",
+        message: donationMessage,
       });
       return paymentIntent;
     } catch (error) {
@@ -270,6 +290,41 @@ export default function NewDonationPage({
                 value={email}
                 onChangeText={setEmail}
                 ref={emailRef}
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  messageRef.current?.focus();
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: colors.card,
+                borderRadius: 12,
+                paddingHorizontal: 14,
+              }}
+            >
+              <Ionicons
+                name="chatbubble-outline"
+                size={22}
+                color={palette.muted}
+              />
+              <TextInput
+                style={{
+                  color: colors.text,
+                  paddingVertical: 14,
+                  paddingHorizontal: 12,
+                  fontSize: 16,
+                  flex: 1,
+                }}
+                selectTextOnFocus
+                clearButtonMode="while-editing"
+                placeholder="Message (optional)"
+                placeholderTextColor={palette.muted}
+                value={donationMessage}
+                onChangeText={setDonationMessage}
+                ref={messageRef}
               />
             </View>
 
@@ -329,6 +384,7 @@ export default function NewDonationPage({
                   name: name || "Dev Test User",
                   email: email || "dev@example.com",
                   slug: orgSlug || "test-org",
+                  message: donationMessage,
                 });
                 return;
               }
