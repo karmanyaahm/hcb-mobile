@@ -312,6 +312,17 @@ export default function OrganizationDonationPage({
     setLoadingConnectingReader(false);
   };
 
+  const autoStartedRef = useRef(false);
+  useEffect(() => {
+    if (autoStartedRef.current) return;
+    if (amount === undefined || amount <= 0) return;
+    if (organizationLoading || !organization) return;
+    if (isStripeInitializing) return;
+    autoStartedRef.current = true;
+    handleGetStarted();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, organizationLoading, organization, isStripeInitializing]);
+
   // Loading state
   if (organizationLoading || !organization || isStripeInitializing) {
     return (
