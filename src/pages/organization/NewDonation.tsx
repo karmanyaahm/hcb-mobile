@@ -252,11 +252,17 @@ export default function NewDonationPage({
   const autoStartedRef = useRef(false);
   useEffect(() => {
     if (autoStartedRef.current) return;
-    if (!prefillAmount || prefillAmount <= 0) return;
+    const hasAllPrefill =
+      !!prefillAmount &&
+      prefillAmount > 0 &&
+      !!prefillName &&
+      !!prefillEmail &&
+      !!prefillMessage;
+    if (!hasAllPrefill) return;
     autoStartedRef.current = true;
     handleCreateDonation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prefillAmount]);
+  }, [prefillAmount, prefillName, prefillEmail, prefillMessage]);
 
   return (
     <TouchableWithoutFeedback onPress={() => RNKeyboard.dismiss()}>
